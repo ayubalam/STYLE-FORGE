@@ -1,8 +1,12 @@
+import RegisterForm from "../../components/auth/RegisterForm";
+
 function Register() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Register Page</h1>
-    </div>
+    <section className="min-h-screen bg-gray-100 flex items-center justify-center px-6 py-12">
+      <div className="w-full max-w-md">
+        <RegisterForm />
+      </div>
+    </section>
   );
 }
 
