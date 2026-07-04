@@ -7,19 +7,13 @@ export function CartProvider({ children }) {
 
   // Add to Cart
   const addToCart = (product) => {
-    console.log("🛒 Product Added:", product);
-
     setCartItems((prevItems) => {
-      console.log("📦 Previous Cart:", prevItems);
-
       const existingItem = prevItems.find(
         (item) => item.id === product.id
       );
 
-      let updatedCart;
-
       if (existingItem) {
-        updatedCart = prevItems.map((item) =>
+        return prevItems.map((item) =>
           item.id === product.id
             ? {
                 ...item,
@@ -27,19 +21,15 @@ export function CartProvider({ children }) {
               }
             : item
         );
-      } else {
-        updatedCart = [
-          ...prevItems,
-          {
-            ...product,
-            quantity: product.quantity || 1,
-          },
-        ];
       }
 
-      console.log("✅ Updated Cart:", updatedCart);
-
-      return updatedCart;
+      return [
+        ...prevItems,
+        {
+          ...product,
+          quantity: product.quantity || 1,
+        },
+      ];
     });
   };
 
@@ -80,6 +70,11 @@ export function CartProvider({ children }) {
     );
   };
 
+  // Clear Cart
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -90,9 +85,6 @@ export function CartProvider({ children }) {
     0
   );
 
-  console.log("🛍 Current Cart Items:", cartItems);
-  console.log("🔢 Total Items:", totalItems);
-
   return (
     <CartContext.Provider
       value={{
@@ -101,6 +93,7 @@ export function CartProvider({ children }) {
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        clearCart,
         totalItems,
         totalPrice,
       }}

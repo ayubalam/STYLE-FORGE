@@ -1,19 +1,40 @@
 import { useNavigate } from "react-router-dom";
-import useCart from "../../hooks/useCart";
 
-function CartSummary() {
+import useCart from "../../hooks/useCart";
+import useOrders from "../../hooks/useOrders";
+
+function OrderSummary() {
   const navigate = useNavigate();
 
-  const { totalPrice, totalItems } = useCart();
+  const {
+    cartItems,
+    totalPrice,
+    clearCart,
+  } = useCart();
 
-  const shipping = totalPrice > 0 ? 0 : 0;
+  const { addOrder } = useOrders();
+
+  const shipping = 0;
   const tax = totalPrice * 0.18;
-  const grandTotal = totalPrice + shipping + tax;
+  const total = totalPrice + tax + shipping;
 
-  const handleCheckout = () => {
-    if (totalItems === 0) return;
+  const handlePlaceOrder = () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
 
-    navigate("/checkout");
+    addOrder({
+      items: cartItems.length,
+      total,
+      products: cartItems,
+    });
+
+    clearCart();
+
+    alert("Order Placed Successfully!");
+
+    navigate("/orders");
   };
 
   return (
@@ -30,7 +51,9 @@ function CartSummary() {
 
         <div className="flex justify-between">
           <span>Shipping</span>
-          <span className="text-green-600">FREE</span>
+          <span className="text-green-600">
+            FREE
+          </span>
         </div>
 
         <div className="flex justify-between">
@@ -42,23 +65,18 @@ function CartSummary() {
 
         <div className="flex justify-between text-xl font-bold">
           <span>Total</span>
-          <span>${grandTotal.toFixed(2)}</span>
+          <span>${total.toFixed(2)}</span>
         </div>
 
         <button
-          onClick={handleCheckout}
-          disabled={totalItems === 0}
-          className={`w-full mt-6 py-3 rounded-lg text-white transition ${
-            totalItems === 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-pink-500 hover:bg-pink-600"
-          }`}
+          onClick={handlePlaceOrder}
+          className="w-full mt-6 bg-pink-500 text-white py-3 rounded-lg hover:bg-pink-600 transition"
         >
-          Proceed to Checkout
+          Place Order
         </button>
       </div>
     </div>
   );
 }
 
-export default CartSummary;
+export default OrderSummary;
