@@ -1,55 +1,24 @@
-import { Link } from "react-router-dom";
+import Logo from "./Logo";
+import SearchBar from "./SearchBar";
+import NavLinks from "./NavLinks";
+import NavIcons from "./NavIcons";
+import MobileMenu from "./MobileMenu";
 
 function Navbar() {
   return (
-    <nav className="bg-black text-white shadow-md">
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-pink-500"
-        >
-          STYLE-FORGE
-        </Link>
+    <header className="sticky top-0 z-50 bg-black shadow-lg">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <Logo />
 
-        <ul className="flex gap-8 font-medium">
-          <li>
-            <Link to="/" className="hover:text-pink-500 transition">
-              Home
-            </Link>
-          </li>
+        <SearchBar />
 
-          <li>
-            <Link to="/products" className="hover:text-pink-500 transition">
-              Products
-            </Link>
-          </li>
+        <NavLinks />
 
-          <li>
-            <Link to="/cart" className="hover:text-pink-500 transition">
-              Cart
-            </Link>
-          </li>
+        <NavIcons />
 
-          <li>
-            <Link to="/wishlist" className="hover:text-pink-500 transition">
-              Wishlist
-            </Link>
-          </li>
-
-          <li>
-            <Link to="/login" className="hover:text-pink-500 transition">
-              Login
-            </Link>
-          </li>
-
-          <li>
-            <Link to="/register" className="hover:text-pink-500 transition">
-              Register
-            </Link>
-          </li>
-        </ul>
+        <MobileMenu />
       </div>
-    </nav>
+    </header>
   );
 }
 

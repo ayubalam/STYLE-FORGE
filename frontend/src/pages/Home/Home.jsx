@@ -1,8 +1,18 @@
+import Hero from "../../components/home/Hero";
+import Categories from "../../components/home/Categories";
+import FeaturedProducts from "../../components/home/FeaturedProducts";
+import WhyChooseUs from "../../components/home/WhyChooseUs";
+import Newsletter from "../../components/home/Newsletter";
+
 function Home() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Home Page</h1>
-    </div>
+    <>
+      <Hero />
+      <Categories />
+      <FeaturedProducts />
+      <WhyChooseUs />
+      <Newsletter />
+    </>
   );
 }
 
