@@ -1,14 +1,25 @@
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
 import QuantitySelector from "./QuantitySelector";
+import useCart from "../../hooks/useCart";
 
 function ProductInfo({
   product,
   quantity,
   setQuantity,
 }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart({
+      ...product,
+      quantity,
+    });
+
+    alert("Product added to cart!");
+  };
+
   return (
     <div>
-
       <p className="text-pink-500 font-semibold">
         {product.brand}
       </p>
@@ -78,8 +89,10 @@ function ProductInfo({
       />
 
       <div className="flex gap-4 mt-10">
-
-        <button className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-pink-500 transition flex items-center justify-center gap-2">
+        <button
+          onClick={handleAddToCart}
+          className="flex-1 bg-black text-white py-4 rounded-lg hover:bg-pink-500 transition flex items-center justify-center gap-2"
+        >
           <FiShoppingCart />
           Add to Cart
         </button>
@@ -87,9 +100,7 @@ function ProductInfo({
         <button className="border px-5 rounded-lg hover:bg-pink-500 hover:text-white transition">
           <FiHeart size={24} />
         </button>
-
       </div>
-
     </div>
   );
 }

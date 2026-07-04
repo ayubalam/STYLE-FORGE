@@ -6,7 +6,19 @@ import {
   FiStar,
 } from "react-icons/fi";
 
+import useCart from "../../hooks/useCart";
+
 function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e) => {
+  e.preventDefault();
+
+  alert("Button Clicked");
+
+  addToCart(product);
+};
+
   return (
     <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
       {/* Product Image */}
@@ -19,8 +31,8 @@ function ProductCard({ product }) {
           />
 
           <button
-            className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-pink-500 hover:text-white transition"
             onClick={(e) => e.preventDefault()}
+            className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-pink-500 hover:text-white transition"
           >
             <FiHeart />
           </button>
@@ -51,7 +63,10 @@ function ProductCard({ product }) {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button className="flex-1 bg-black text-white py-3 rounded-lg hover:bg-pink-500 transition">
+          <button
+            onClick={handleAddToCart}
+            className="flex-1 bg-black text-white py-3 rounded-lg hover:bg-pink-500 transition"
+          >
             <span className="flex items-center justify-center gap-2">
               <FiShoppingCart />
               Add
