@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
-import products from "../../data/products";
+import useProducts from "../../hooks/useProducts";
+
 import ProductCard from "../../components/product/ProductCard";
 import ProductSearch from "../../components/product/ProductSearch";
 import ProductFilter from "../../components/product/ProductFilter";
@@ -8,15 +9,24 @@ import ProductSort from "../../components/product/ProductSort";
 import Pagination from "../../components/product/Pagination";
 
 function Products() {
+  const { products, loading } = useProducts();
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("default");
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
+
   const productsPerPage = 8;
 
+  // Reset page whenever search/filter/sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, category, sort]);
+
+  // ==========================
   // Filter & Sort Products
+  // ==========================
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
@@ -28,20 +38,26 @@ function Products() {
     }
 
     // Search
-    if (search) {
+    if (search.trim()) {
       filtered = filtered.filter((product) =>
-        product.name.toLowerCase().includes(search.toLowerCase())
+        product.name
+          ?.toLowerCase()
+          .includes(search.toLowerCase())
       );
     }
 
     // Sorting
     switch (sort) {
       case "low-high":
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort(
+          (a, b) => Number(a.price) - Number(b.price)
+        );
         break;
 
       case "high-low":
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort(
+          (a, b) => Number(b.price) - Number(a.price)
+        );
         break;
 
       case "name":
@@ -55,25 +71,41 @@ function Products() {
     }
 
     return filtered;
-  }, [search, category, sort]);
+  }, [products, search, category, sort]);
 
-  // Pagination Logic
+  // ==========================
+  // Pagination
+  // ==========================
   const totalPages = Math.ceil(
     filteredProducts.length / productsPerPage
   );
 
-  const startIndex = (currentPage - 1) * productsPerPage;
+  const startIndex =
+    (currentPage - 1) * productsPerPage;
 
   const displayedProducts = filteredProducts.slice(
     startIndex,
     startIndex + productsPerPage
   );
 
+  // ==========================
+  // Loading
+  // ==========================
+  if (loading) {
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <h2 className="text-3xl font-bold">
+          Loading Products...
+        </h2>
+      </section>
+    );
+  }
+
   return (
-    <section className="py-16">
+    <section className="py-16 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Page Heading */}
+        {/* Heading */}
         <div className="mb-10">
           <h1 className="text-4xl font-bold">
             Products
@@ -106,20 +138,22 @@ function Products() {
 
         </div>
 
-        {/* Product Grid */}
+        {/* Products */}
         {displayedProducts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
               {displayedProducts.map((product) => (
                 <ProductCard
-                  key={product.id}
+                  key={product._id || product.id}
                   product={product}
                 />
               ))}
+
             </div>
 
             {/* Pagination */}
-            {filteredProducts.length > productsPerPage && (
+            {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -128,12 +162,12 @@ function Products() {
             )}
           </>
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-24">
             <h2 className="text-3xl font-bold">
-              No products found
+              No Products Found
             </h2>
 
-            <p className="text-gray-500 mt-3">
+            <p className="text-gray-500 mt-4">
               Try another search or category.
             </p>
           </div>

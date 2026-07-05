@@ -1,31 +1,24 @@
-const products = [
-  {
-    id: 1,
-    name: "Classic Black Hoodie",
-    price: "$59",
-    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600",
-  },
-  {
-    id: 2,
-    name: "Premium White Sneakers",
-    price: "$89",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
-  },
-  {
-    id: 3,
-    name: "Slim Fit Jeans",
-    price: "$69",
-    image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600",
-  },
-  {
-    id: 4,
-    name: "Casual Jacket",
-    price: "$99",
-    image: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=600",
-  },
-];
+import { Link } from "react-router-dom";
+import useProducts from "../../hooks/useProducts";
 
 function FeaturedProducts() {
+  const { products, loading } = useProducts();
+
+  // Show only first 4 products
+  const featuredProducts = products.slice(0, 4);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold">
+            Loading Products...
+          </h2>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-gray-100">
       <div className="max-w-7xl mx-auto px-6">
@@ -38,9 +31,9 @@ function FeaturedProducts() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product) => (
+          {featuredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id || product.id}
               className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
             >
               <img
@@ -55,15 +48,27 @@ function FeaturedProducts() {
                 </h3>
 
                 <p className="text-pink-500 font-bold mt-2">
-                  {product.price}
+                  ${product.price}
                 </p>
 
-                <button className="mt-5 w-full bg-black text-white py-3 rounded-lg hover:bg-pink-500 transition">
+                <Link
+                  to={`/products/${product.slug}`}
+                  className="block mt-5 w-full text-center bg-black text-white py-3 rounded-lg hover:bg-pink-500 transition"
+                >
                   View Details
-                </button>
+                </Link>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Link
+            to="/products"
+            className="inline-block bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg transition"
+          >
+            View All Products
+          </Link>
         </div>
       </div>
     </section>

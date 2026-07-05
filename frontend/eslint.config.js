@@ -18,7 +18,11 @@ export default defineConfig([
 
     languageOptions: {
       globals: globals.browser,
+
       parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+
         ecmaFeatures: {
           jsx: true,
         },
@@ -26,8 +30,11 @@ export default defineConfig([
     },
 
     rules: {
-      // Allow exporting React Contexts, hooks, and helper functions
+      // React Refresh
       "react-refresh/only-export-components": "off",
+
+      // Disable the React 19 warning
+      "react-hooks/set-state-in-effect": "off",
     },
   },
 ]);

@@ -1,30 +1,31 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+
 import useAuth from "../../hooks/useAuth";
+import { loginUser } from "../../api/authApi";
 
 function LoginForm() {
   const navigate = useNavigate();
+
   const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    remember: false,
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -32,13 +33,32 @@ function LoginForm() {
       return;
     }
 
-    login({
-      name: "Ayub Alam",
-      email: formData.email,
-      role: "user",
-    });
+    try {
+      setLoading(true);
 
-    navigate("/");
+      const { data } = await loginUser(formData);
+
+      // Save BOTH user and token
+      login({
+        user: data.user,
+        token: data.token,
+      });
+
+      alert("Login Successful!");
+
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Login Failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,7 +70,6 @@ function LoginForm() {
         Login
       </h2>
 
-      {/* Email */}
       <div className="mb-5">
         <label className="block mb-2 font-medium">
           Email
@@ -63,10 +82,10 @@ function LoginForm() {
           onChange={handleChange}
           placeholder="Enter your email"
           className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
+          required
         />
       </div>
 
-      {/* Password */}
       <div className="mb-5">
         <label className="block mb-2 font-medium">
           Password
@@ -80,6 +99,7 @@ function LoginForm() {
             onChange={handleChange}
             placeholder="Enter password"
             className="w-full border rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-pink-500"
+            required
           />
 
           <button
@@ -89,42 +109,17 @@ function LoginForm() {
             }
             className="absolute right-4 top-1/2 -translate-y-1/2"
           >
-            {showPassword ? (
-              <FiEyeOff />
-            ) : (
-              <FiEye />
-            )}
+            {showPassword ? <FiEyeOff /> : <FiEye />}
           </button>
         </div>
       </div>
 
-      {/* Remember */}
-      <div className="flex justify-between items-center mb-6">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="remember"
-            checked={formData.remember}
-            onChange={handleChange}
-          />
-
-          Remember Me
-        </label>
-
-        <Link
-          to="#"
-          className="text-pink-500 hover:underline"
-        >
-          Forgot Password?
-        </Link>
-      </div>
-
-      {/* Login */}
       <button
         type="submit"
+        disabled={loading}
         className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-lg font-semibold transition"
       >
-        Login
+        {loading ? "Logging in..." : "Login"}
       </button>
 
       <p className="text-center mt-6">

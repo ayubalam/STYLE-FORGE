@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import products from "../../data/products";
+import useProducts from "../../hooks/useProducts";
 
 import Breadcrumb from "../../components/product/Breadcrumb";
 import ProductGallery from "../../components/product/ProductGallery";
@@ -10,14 +10,16 @@ import ProductInfo from "../../components/product/ProductInfo";
 function ProductDetails() {
   const { slug } = useParams();
 
+  const { products } = useProducts();
+
   const [quantity, setQuantity] = useState(1);
 
-  // Find the product by slug
+  // Find Product
   const product = products.find(
     (item) => item.slug === slug
   );
 
-  // Product not found
+  // Product Not Found
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">

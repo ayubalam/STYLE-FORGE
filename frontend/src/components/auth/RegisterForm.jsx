@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
+import { registerUser } from "../../api/authApi";
+
 function RegisterForm() {
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -13,18 +17,21 @@ function RegisterForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    role: "user",
     password: "",
     confirmPassword: "",
   });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -44,9 +51,27 @@ function RegisterForm() {
       return;
     }
 
-    alert("Registration Successful!");
+    try {
+      setLoading(true);
 
-    navigate("/login");
+      await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
+
+      alert("Registration Successful!");
+
+      navigate("/login");
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Registration Failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,6 +96,7 @@ function RegisterForm() {
           onChange={handleChange}
           placeholder="Enter your name"
           className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 outline-none"
+          required
         />
       </div>
 
@@ -87,7 +113,25 @@ function RegisterForm() {
           onChange={handleChange}
           placeholder="Enter your email"
           className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 outline-none"
+          required
         />
+      </div>
+
+      {/* Register As */}
+      <div className="mb-5">
+        <label className="block mb-2 font-medium">
+          Register As
+        </label>
+
+        <select
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
+          className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 outline-none"
+        >
+          <option value="user">Customer</option>
+          <option value="admin">Admin</option>
+        </select>
       </div>
 
       {/* Password */}
@@ -104,6 +148,7 @@ function RegisterForm() {
             onChange={handleChange}
             placeholder="Enter password"
             className="w-full border rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-pink-500 outline-none"
+            required
           />
 
           <button
@@ -138,8 +183,9 @@ function RegisterForm() {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            placeholder="Confirm password"
+            placeholder="Confirm Password"
             className="w-full border rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-pink-500 outline-none"
+            required
           />
 
           <button
@@ -162,9 +208,10 @@ function RegisterForm() {
 
       <button
         type="submit"
-        className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-lg font-semibold transition"
+        disabled={loading}
+        className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-lg font-semibold transition disabled:bg-gray-400"
       >
-        Register
+        {loading ? "Registering..." : "Register"}
       </button>
 
       <p className="text-center mt-6">
